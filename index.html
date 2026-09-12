@@ -1,63 +1,84 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <!DOCTYPE html>
-<html lang="id">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NACKL Art Miner TWA</title>
-    <!-- Tambahkan Script Telegram WebApp SDK di sini -->
+    <title>NACKL Art Miner - Dragon Game</title>
+    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background: #0f172a; color: #f8fafc; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; justify-content: space-between; align-items: center; overflow: hidden; }
-        .top-bar { display: flex; justify-content: space-around; width: 100%; padding: 15px 0; background: #1e293b; border-bottom: 1px solid #334155; }
-        .coin-box { font-size: 18px; font-weight: bold; color: #facc15; }
-        .main-content { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; text-align: center; width: 100%; }
-        .visual-shaft { font-size: 80px; margin-bottom: 15px; cursor: pointer; user-select: none; transition: transform 0.1s; }
-        .visual-shaft:active { transform: scale(0.95); }
-        .shift-btn { background: #f59e0b; color: #000; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 15px; }
-        .shift-btn:hover { background: #d97706; }
-        .rate-info { font-size: 14px; color: #94a3b8; margin-top: 8px; }
-        .nav-bar { display: flex; justify-content: space-around; width: 100%; background: #1e293b; padding: 12px 0; border-top: 1px solid #334155; }
-        .nav-item { font-size: 14px; color: #cbd5e1; cursor: pointer; text-align: center; }
-        .nav-item:hover { color: #38bdf8; }
-        .user-greeting { font-size: 13px; color: #38bdf8; margin-bottom: 5px; }
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .dragon-container {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        #dragon-avatar {
+            font-size: 80px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            user-select: none;
+        }
+        #dragon-avatar:active {
+            transform: scale(0.92);
+        }
+        .stats-box {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:active {
+            background-color: #006699;
+        }
     </style>
 </head>
-<<div class="dragon-container" style="text-align: center; margin: 20px;">
-    <div id="dragon-avatar" style="font-size: 64px;">🐉</div>
-    <h2 id="dragon-name">Nacki Drago Lv. 1</h2>
-    <p>Multiplier Tambang: <span id="multiplier">1x</span></p>
-    <p>Energi Naga: <span id="energy">100</span>/100</p>
-</div>
-<div class="stats-box" style="text-align: center;">
-    <p>Saldo NACKL: <span id="score">0</span></p>
-    <p>Pendapatan per Detik (PPS): <span id="pps">1</span></p>
-</div>
-<div style="text-align: center; margin-top: 15px;">
-    <button id="feed-btn" onclick="feedDragon()" style="padding: 10px 20px; font-weight: bold;">Beri Makan Naga (Cost: 50 NACKL)</button>
-</div>>
-    <div class="top-bar">
-        <div class="coin-box">🪙 <span id="balance">29,700</span></div>
-        <div style="font-size: 14px; color: #94a3b8;">Pass | Arena</div>
+<body>
+    <div class="container">
+        <h1>🐉 NACKL Dragon Miner</h1>
+        
+        <div class="dragon-container">
+            <!-- Klik naga untuk menambang manual -->
+            <div id="dragon-avatar" onclick="tapDragon()">🐲</div>
+            <h2 id="dragon-name">Nacki Drago Lv. 1</h2>
+            <p>Multiplier: <span id="multiplier">1x</span></p>
+            <p>Energi: <span id="energy">100</span>/100</p>
+        </div>
+
+        <div class="stats-box">
+            <p>Saldo NACKL: <span id="score">0</span></p>
+            <p>Pendapatan / Detik (PPS): <span id="pps">1</span></p>
+        </div>
+
+        <button id="feed-btn" onclick="feedDragon()">Beri Makan Naga (Cost: <span id="feed-cost">50</span> NACKL)</button>
     </div>
 
-    <div class="main-content">
-        <div class="user-greeting" id="welcome-user">Halo, Penambang!</div>
-        <div id="art-canvas" class="visual-shaft">🏛️🎨</div>
-        <div style="font-size: 14px; color: #38bdf8;">Studio Seni Utama (-0m)</div>
-        <button class="shift-btn" id="claim-btn">Akhiri Shift (+<span id="shift-gain">233</span>)</button>
-        <div class="rate-info">Akumulasi shift: <span id="timer-display">9:05:15</span> | 528 NACKL/h</div>
-    </div>
-
-    <div class="nav-bar">
-        <div class="nav-item" onclick="switchTab('Workshop')">🛠️ Workshop</div>
-        <div class="nav-item" onclick="switchTab('Bonus')">🎁 Bonus</div>
-        <div class="nav-item" onclick="switchTab('Tasks')">📜 Tasks</div>
-        <div class="nav-item" onclick="switchTab('Friends')">👥 Friends</div>
-    </div>
-
+    <!-- Menghubungkan ke file game.js -->
     <script src="game.js"></script>
 </body>
 </html>
