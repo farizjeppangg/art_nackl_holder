@@ -25,7 +25,19 @@
         .user-greeting { font-size: 13px; color: #38bdf8; margin-bottom: 5px; }
     </style>
 </head>
-<body>
+<<div class="dragon-container" style="text-align: center; margin: 20px;">
+    <div id="dragon-avatar" style="font-size: 64px;">🐉</div>
+    <h2 id="dragon-name">Nacki Drago Lv. 1</h2>
+    <p>Multiplier Tambang: <span id="multiplier">1x</span></p>
+    <p>Energi Naga: <span id="energy">100</span>/100</p>
+</div>
+<div class="stats-box" style="text-align: center;">
+    <p>Saldo NACKL: <span id="score">0</span></p>
+    <p>Pendapatan per Detik (PPS): <span id="pps">1</span></p>
+</div>
+<div style="text-align: center; margin-top: 15px;">
+    <button id="feed-btn" onclick="feedDragon()" style="padding: 10px 20px; font-weight: bold;">Beri Makan Naga (Cost: 50 NACKL)</button>
+</div>>
     <div class="top-bar">
         <div class="coin-box">🪙 <span id="balance">29,700</span></div>
         <div style="font-size: 14px; color: #94a3b8;">Pass | Arena</div>
