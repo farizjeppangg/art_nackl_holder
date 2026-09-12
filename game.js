@@ -1,78 +1,65 @@
-// Inisialisasi Telegram WebApp
-let tg = window.Telegram.WebApp;
-tg.ready();
-tg.expand(); // Membuka Mini App secara otomatis dalam ukuran penuh (fullscreen)
+let gameData = {
+    score: 0,
+    pps: 1,
+    dragonLevel: 1,
+    energy: 100,
+    multiplier: 1
+};
 
-// Ambil data akun Telegram pemain yang sedang login
-let telegramUser = tg.initDataUnsafe?.user;
-if (telegramUser) {
-    document.getElementById('welcome-user').textContent = `Halo, ${telegramUser.first_name}! 👋`;
+// Inisialisasi Telegram WebApp SDK
+let tg = window.Telegram.WebApp;
+if (tg) {
+    tg.expand();
 }
 
-// Logika Game & Auto Mining
-let score = 29700; 
-let shiftEarnings = 233;
-const productionRatePerHour = 528; 
-const productionRatePerSecond = productionRatePerHour / 3600;
-
-const balanceElement = document.getElementById('balance');
-const claimBtn = document.getElementById('claim-btn');
-const artCanvas = document.getElementById('art-canvas');
-const shiftGainElement = document.getElementById('shift-gain');
-
-let lastTimestamp = Date.now();
-
-// Auto-mining otomatis setiap detik
-setInterval(() => {
-    const now = Date.now();
-    const elapsedSeconds = (now - lastTimestamp) / 1000;
-    lastTimestamp = now;
-
-    shiftEarnings += productionRatePerSecond * elapsedSeconds;
-    updateDisplay();
-}, 1000);
-
-// Background/Offline Mining: Hitung otomatis saat kembali dari latar belakang Telegram
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-        const now = Date.now();
-        const elapsedSeconds = (now - lastTimestamp) / 1000;
-        lastTimestamp = now;
-
-        shiftEarnings += productionRatePerSecond * elapsedSeconds;
-        updateDisplay();
-    } else {
-        lastTimestamp = Date.now();
-    }
-});
-
-// Aksi klik kanvas (Simulasi tap seni & persiapan fungsi add_tap SDK)
-artCanvas.addEventListener('click', () => {
-    score += 1;
-    shiftEarnings += 1;
-    updateDisplay();
+// Fungsi saat naga diklik (Manual Mining / Tap)
+function tapDragon() {
+    gameData.score += gameData.multiplier;
     
-    // Trigger getaran kecil di perangkat seluler via Telegram SDK jika didukung
-    if (tg.HapticFeedback) {
+    // Umpan balik getaran di HP (Haptic Feedback)
+    if (tg && tg.HapticFeedback) {
         tg.HapticFeedback.impactOccurred('light');
     }
-});
-
-// Klaim hasil shift
-claimBtn.addEventListener('click', () => {
-    score += Math.floor(shiftEarnings);
-    shiftEarnings = 0;
-    updateDisplay();
     
-    // Kirim notifikasi popup kecil di dalam Telegram
-    tg.showAlert("Hasil shift berhasil diklaim ke saldo utama penambangan!");
-});
-
-function updateDisplay() {
-    balanceElement.textContent = Math.floor(score).toLocaleString();
-    shiftGainElement.textContent = Math.floor(shiftEarnings).toLocaleString();
+    updateUI();
 }
 
-function switchTab(tabName) {
-    tg.showAlert("Membuka menu: " + tabName);
+// Fungsi memberi makan naga (Upgrade Level & Multiplier)
+function feedDragon() {
+    let cost = 50 * gameData.dragonLevel;
+    if (gameData.score >= cost) {
+        gameData.score -= cost;
+        gameData.dragonLevel += 1;
+        gameData.pps += 2;
+        gameData.multiplier = gameData.dragonLevel;
+        
+        if (tg && tg.HapticFeedback) {
+            tg.HapticFeedback.impactOccurred('heavy');
+        }
+        updateUI();
+    } else {
+        if (tg && tg.HapticFeedback) {
+            tg.HapticFeedback.notificationOccurred('error');
+        }
+        alert("Saldo NACKL tidak cukup untuk memberi makan naga!");
+    }
 }
+
+// Memperbarui tampilan teks di layar (UI)
+function updateUI() {
+    document.getElementById('score').innerText = Math.floor(gameData.score);
+    document.getElementById('pps').innerText = gameData.pps;
+    document.getElementById('dragon-name').innerText = `Nacki Drago Lv. ${gameData.dragonLevel}`;
+    document.getElementById('multiplier').innerText = `${gameData.multiplier}x`;
+    document.getElementById('energy').innerText = gameData.energy;
+    document.getElementById('feed-cost').innerText = 50 * gameData.dragonLevel;
+}
+
+// Auto-mine loop (Otomatis menambah saldo setiap 1 detik berdasarkan PPS)
+setInterval(function() {
+    gameData.score += gameData.pps;
+    updateUI();
+}, 1000);
+
+// Jalankan update pertama kali saat game dimuat
+updateUI();
